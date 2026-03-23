@@ -47,8 +47,8 @@ export function SkillsSection({ skills = CONFIG.skills }) {
   const [activeCol, setActiveCol] = useState(0)
 
   const columns = [
-    { title: 'DSA', items: skills.columns.dsa || [{ name: 'DSA', value: 86 }] },
     { title: 'ML & AI', items: skills.columns.mlAi },
+    { title: 'DSA', items: skills.columns.dsa || [{ name: 'DSA', value: 86 }] },
     { title: 'Languages', items: skills.columns.languagesCp },
     { title: 'Dev Tools', items: skills.columns.devTools },
   ]

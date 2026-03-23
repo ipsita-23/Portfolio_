@@ -41,8 +41,8 @@ export function AboutSection({ config = CONFIG }) {
           <span className="text-white/25">one model at a time.</span>
         </motion.h2>
 
-        {/* Two column layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+        {/* Main Content Grid */}
+        <div className="mt-12 md:mt-16 grid grid-cols-1 md:grid-cols-[1fr_1.5fr] gap-8 md:gap-12 items-center">
 
           {/* Left — Profile Image — centered */}
           <motion.div
@@ -52,13 +52,13 @@ export function AboutSection({ config = CONFIG }) {
             transition={{ duration: 0.8, delay: 0.15, ease: [0.25, 0.1, 0.25, 1] }}
             className="flex items-center justify-center"
           >
-            <div className="relative overflow-hidden aspect-square w-[220px] md:w-[260px] transition-transform duration-500 hover:scale-105"
+            <div className="relative overflow-hidden aspect-square w-[242px] md:w-[286px] transition-transform duration-500 hover:scale-105"
               style={{ boxShadow: '0 0 60px rgba(255,255,255,0.2), 0 0 120px rgba(255,255,255,0.05)', border: '3px solid rgba(255,255,255,0.25)' }}
             >
               <img
                 src={profileImg}
                 alt={config.name}
-                className="w-full h-full object-cover object-[50%_30%] scale-[0.85]"
+                className="w-full h-full object-cover object-[50%_30%]"
               />
               <div className="absolute inset-0" style={{ boxShadow: 'inset 0 0 0 2px rgba(255,255,255,0.15)' }} />
             </div>
@@ -72,14 +72,14 @@ export function AboutSection({ config = CONFIG }) {
             transition={{ duration: 0.7, delay: 0.25 }}
             className="space-y-8"
           >
-            <h3 className="text-[28px] md:text-[36px] font-bold tracking-[-0.02em] leading-[1.15] text-white"
+            <h3 className="text-[32px] md:text-[42px] font-bold text-white mb-2 tracking-tight"
               style={{ fontFamily: appleFontDisplay }}
             >
               {config.name}
             </h3>
 
             {/* Lively Tags */}
-            <div className="flex flex-wrap gap-3">
+            <div className="flex items-center gap-3 whitespace-nowrap overflow-x-auto pb-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
               {tags.map((tag, i) => (
                 <motion.span
                   key={tag.label}
