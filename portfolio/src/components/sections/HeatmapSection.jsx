@@ -8,10 +8,10 @@ const appleFont = "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter', sa
 const appleFontDisplay = "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif"
 
 const COLORS = [
-  'rgba(255,255,255,0.03)',
-  'rgba(255,255,255,0.12)',
+  'rgba(255,255,255,0.06)',
   'rgba(255,255,255,0.25)',
-  'rgba(255,255,255,0.45)',
+  'rgba(255,255,255,0.55)',
+  'rgba(255,255,255,0.90)',
 ]
 
 function heatColor(level) {
@@ -155,6 +155,7 @@ export function HeatmapSection({ onGithubCommits }) {
             rx={3}
             fill={fill}
             className="transition-colors duration-300 hover:opacity-70"
+            style={{ filter: level > 0 ? 'drop-shadow(0 0 4px rgba(255,255,255,0.4))' : 'none' }}
           />
         )
       }
@@ -164,8 +165,8 @@ export function HeatmapSection({ onGithubCommits }) {
   }, [cells])
 
   return (
-    <section id="commits" className="bg-[#1a1a2e] relative min-h-screen flex flex-col justify-center overflow-hidden snap-start">
-      <div className="mx-auto max-w-6xl px-6 py-28 md:py-36 relative z-10">
+    <section id="commits" className="bg-transparent relative min-h-screen flex flex-col overflow-hidden snap-start">
+      <div className="mx-auto max-w-6xl px-6 pt-12 pb-28 md:pt-16 md:pb-36 relative z-10">
 
         <motion.p
           initial={{ opacity: 0, y: 16 }}
@@ -244,6 +245,7 @@ export function HeatmapSection({ onGithubCommits }) {
           style={{
             background: 'rgba(255,255,255,0.02)',
             border: '1px solid rgba(255,255,255,0.06)',
+            boxShadow: '0 0 20px rgba(255,255,255,0.06)',
           }}
         >
           {loading ? (

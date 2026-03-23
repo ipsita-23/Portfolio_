@@ -81,6 +81,7 @@ export const CONFIG = {
       description:
         'Machine-learning risk evaluation for dropout detection across conventional + online learning.',
       techStack: ['Python', 'Pandas', 'Scikit-learn', 'XGBoost', 'Random Forest', 'Matplotlib', 'Seaborn'],
+      image: '/dropout_prediction.png',
       links: {
         github: 'https://github.com/ipsita-23/Dropout-prediction-model-for-traditional-and-e-learning-mode',
         live: '#',
@@ -92,6 +93,7 @@ export const CONFIG = {
       description:
         'Algorithmic trading simulator with secure HMAC auth, multiple order types, and execution logs.',
       techStack: ['Python', 'REST API', 'Binance API', 'HMAC', 'Streamlit'],
+      image: '/trading_bot.png',
       links: {
         github: 'https://github.com/ipsita-23/Binance-Future-Testnet',
         live: '#',
@@ -103,6 +105,7 @@ export const CONFIG = {
       description:
         'Engineered a high-performance in-memory exchange core implementing price-time priority matching, enabling deterministic order execution with microsecond-level latency. Designed cache-efficient data structures for bid/ask management with O(1) best price access and O(log n) order insertion; sustained ~1.17M+ orders/sec throughput. Integrated an embedded HTTP server and lightweight UI for real-time monitoring.',
       techStack: ['C++', 'STL', 'CMake', 'MSVC', 'HTTP', 'JSON', 'Benchmarking'],
+      image: '/matching_engine.png',
       links: {
         github: 'https://github.com/ipsita-23/low-latency-matching-engine',
         live: '#',
@@ -154,35 +157,40 @@ export const CONFIG = {
       issuer: 'Coursera',
       date: "Feb'2026",
       credentialId: 'Verified',
-      url: ''
+      url: '/NLP COURSERA.pdf',
+      image: '/NLP COURSERA.png'
     },
     {
       title: 'Supervised ML: Regression & Classification',
       issuer: 'Coursera',
       date: "Sept'2025",
       credentialId: 'Verified',
-      url: ''
+      url: '/supervised learning.pdf',
+      image: '/supervised learning.png'
     },
     {
       title: 'LLM Engineering: Master AI & Agents',
       issuer: 'Udemy',
       date: "Sept'2025",
       credentialId: 'Verified',
-      url: ''
+      url: '/LLM UDEMY.pdf',
+      image: '/LLM UDEMY.png'
     },
     {
       title: 'Computer Communications',
       issuer: 'Coursera',
       date: "Nov'2024",
       credentialId: 'Verified',
-      url: ''
+      url: '/Coursera networking.pdf',
+      image: '/Coursera networking.png'
     },
     {
       title: 'AI ML For Real World Problem Solving',
       issuer: 'LPU Training',
       date: 'Completed',
       credentialId: 'Verified',
-      url: ''
+      url: '/summer training.pdf',
+      image: '/summer training.png'
     }
   ]
 }

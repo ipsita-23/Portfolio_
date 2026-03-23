@@ -26,10 +26,13 @@ function SkillBar({ name, value, delay = 0 }) {
           {value}%
         </span>
       </div>
-      <div className="h-[3px] w-full rounded-full bg-white/[0.06] overflow-hidden">
+      <div className="h-[6px] w-full rounded-full bg-white/10 relative mt-3 shadow-inner">
         <motion.div
-          className="h-full rounded-full"
-          style={{ background: 'linear-gradient(90deg, rgba(255,255,255,0.35), rgba(255,255,255,0.15))' }}
+          className="absolute left-0 top-0 bottom-0 rounded-full"
+          style={{ 
+            background: 'linear-gradient(90deg, rgba(255,255,255,0.3), rgba(255,255,255,1))', 
+            boxShadow: '0 0 15px rgba(255,255,255,0.8), 0 0 5px rgba(255,255,255,1)' 
+          }}
           initial={{ width: 0 }}
           whileInView={{ width: `${value}%` }}
           viewport={{ once: true }}
@@ -51,8 +54,8 @@ export function SkillsSection({ skills = CONFIG.skills }) {
   ]
 
   return (
-    <section id="skills" className="relative min-h-screen bg-[#1a1a2e] snap-start flex flex-col justify-center">
-      <div className="relative z-10 mx-auto w-full max-w-6xl px-6 py-28 md:py-36">
+    <section id="skills" className="relative min-h-screen bg-transparent snap-start flex flex-col">
+      <div className="relative z-10 mx-auto w-full max-w-6xl px-6 pt-12 pb-28 md:pt-16 md:pb-36">
 
         {/* Apple-style overline */}
         <motion.p
@@ -96,25 +99,24 @@ export function SkillsSection({ skills = CONFIG.skills }) {
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.15 }}
           className="flex gap-1 p-1 rounded-xl w-fit mb-16"
-          style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}
+          style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)', boxShadow: '0 0 20px rgba(255,255,255,0.06)' }}
         >
           {columns.map((col, i) => (
             <button
               key={col.title}
               onClick={() => setActiveCol(i)}
-              className={`relative px-5 py-2 rounded-lg text-[13px] font-semibold tracking-wide transition-all duration-300 cursor-pointer
-                ${activeCol === i ? 'text-white' : 'text-white/35 hover:text-white/55'}`}
+              className={`relative px-8 py-3 rounded-xl text-[14px] font-bold tracking-wide transition-all duration-300 cursor-pointer outline-none min-w-[120px]
+                ${activeCol === i ? 'text-black' : 'text-white/40 hover:text-white hover:bg-white/5'}`}
               style={{ fontFamily: appleFont }}
             >
               {activeCol === i && (
                 <motion.div
                   layoutId="activeSkillTab"
-                  className="absolute inset-0 rounded-lg"
+                  className="absolute inset-0 rounded-xl bg-white"
                   style={{
-                    background: 'rgba(255,255,255,0.08)',
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.3), inset 0 0 0 0.5px rgba(255,255,255,0.1)',
+                    boxShadow: '0 0 30px rgba(255,255,255,0.9), 0 0 10px rgba(255,255,255,1)',
                   }}
-                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                 />
               )}
               <span className="relative z-10">{col.title}</span>

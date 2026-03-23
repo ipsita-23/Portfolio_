@@ -12,6 +12,18 @@ import SplashCursor from './components/cursor/SplashCursor'
 import { ScrollProgress } from './components/common/ScrollProgress'
 import Dock from './components/nav/Dock'
 import { Home, User, Code, FolderOpen, GraduationCap, Mail, Trophy, Award } from 'lucide-react'
+import { motion } from 'framer-motion'
+
+const SectionTransition = ({ children }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 50 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: false, margin: "0px 0px -10% 0px" }}
+    transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+  >
+    {children}
+  </motion.div>
+)
 
 function App() {
   const scrollTo = (id) => {
@@ -37,16 +49,16 @@ function App() {
     <div id="main-scroller" className="h-screen w-full overflow-y-auto overflow-x-hidden snap-y snap-mandatory scroll-smooth bg-[#1a1a2e] text-[#e2e8f0] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
       <SplashCursor />
       <ScrollProgress />
-      <main className="relative">
+      <main className="relative z-[1]">
         <HeroSection config={CONFIG} />
-        <AboutSection config={CONFIG} />
-        <SkillsSection skills={CONFIG.skills} />
-        <PlatformsSection />
-        <HeatmapSection />
-        <ExperienceSection projects={CONFIG.projects} />
-        <CertificationsSection config={CONFIG} />
-        <EducationSection education={CONFIG.education} />
-        <ContactSection config={CONFIG} />
+        <SectionTransition><AboutSection config={CONFIG} /></SectionTransition>
+        <SectionTransition><SkillsSection skills={CONFIG.skills} /></SectionTransition>
+        <SectionTransition><PlatformsSection /></SectionTransition>
+        <SectionTransition><HeatmapSection /></SectionTransition>
+        <SectionTransition><ExperienceSection projects={CONFIG.projects} /></SectionTransition>
+        <SectionTransition><CertificationsSection config={CONFIG} /></SectionTransition>
+        <SectionTransition><EducationSection education={CONFIG.education} /></SectionTransition>
+        <SectionTransition><ContactSection config={CONFIG} /></SectionTransition>
       </main>
       <Dock 
         items={navItems} 

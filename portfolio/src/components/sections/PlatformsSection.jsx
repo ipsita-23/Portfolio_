@@ -28,7 +28,7 @@ function CustomTooltip({ active, payload }) {
   return null
 }
 
-function RatingCard({ title, subLabel, rating, history, delay = 0 }) {
+function RatingCard({ title, subLabel, rating, history, delay = 0, color = 'rgba(255,255,255,0.9)', glowColor = 'rgba(255,255,255,0.06)' }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
@@ -38,7 +38,8 @@ function RatingCard({ title, subLabel, rating, history, delay = 0 }) {
       className="rounded-2xl overflow-hidden group cursor-default"
       style={{
         background: 'rgba(255,255,255,0.03)',
-        border: '1px solid rgba(255,255,255,0.06)',
+        border: `1px solid ${glowColor}`,
+        boxShadow: `0 0 25px ${glowColor}`,
       }}
     >
       <div className="p-6 md:p-8">
@@ -73,11 +74,12 @@ function RatingCard({ title, subLabel, rating, history, delay = 0 }) {
               <Line
                 type="monotone"
                 dataKey="rating"
-                stroke="rgba(255,255,255,0.35)"
-                strokeWidth={2}
+                stroke={color}
+                strokeWidth={3}
                 dot={false}
-                activeDot={{ r: 5, fill: 'rgba(255,255,255,0.7)', stroke: 'rgba(255,255,255,0.1)', strokeWidth: 6 }}
+                activeDot={{ r: 6, fill: color, stroke: glowColor, strokeWidth: 10 }}
                 animationDuration={2000}
+                style={{ filter: `drop-shadow(0 0 8px ${color})` }}
               />
             </LineChart>
           </ResponsiveContainer>
@@ -178,8 +180,8 @@ export function PlatformsSection() {
   }, [profiles])
 
   return (
-    <section id="cp" className="bg-[#1a1a2e] relative overflow-hidden min-h-screen flex flex-col justify-center snap-start">
-      <div className="mx-auto max-w-6xl px-6 py-28 md:py-36 relative z-10">
+    <section id="cp" className="bg-transparent relative overflow-hidden min-h-screen flex flex-col snap-start">
+      <div className="mx-auto max-w-6xl px-6 pt-12 pb-28 md:pt-16 md:pb-36 relative z-10">
 
         {/* Apple-style overline */}
         <motion.p
@@ -227,40 +229,40 @@ export function PlatformsSection() {
           style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}
         >
           <div>
-            <div className="text-[44px] font-bold tracking-[-0.03em] leading-none text-white/80 mb-1"
-              style={{ fontFamily: appleFontDisplay }}
+            <div className="text-[52px] font-bold tracking-[-0.03em] leading-none text-white mb-2"
+              style={{ fontFamily: appleFontDisplay, textShadow: '0 0 20px rgba(255,255,255,0.3)' }}
             >
               {totalSolved}
             </div>
-            <div className="text-[12px] font-medium uppercase tracking-[0.15em] text-white/25"
+            <div className="text-[13px] font-semibold uppercase tracking-[0.2em] text-white/40"
               style={{ fontFamily: appleFont }}
             >
               Problems Solved
             </div>
           </div>
 
-          <div className="flex gap-x-10 gap-y-4 flex-wrap items-end">
+          <div className="flex gap-x-12 gap-y-4 flex-wrap items-end">
             <div>
-              <div className="text-[24px] font-bold tracking-[-0.02em] leading-none text-white/50 mb-1"
-                style={{ fontFamily: appleFontDisplay }}
+              <div className="text-[28px] font-bold tracking-[-0.02em] leading-none text-white/70 mb-2"
+                style={{ fontFamily: appleFontDisplay, textShadow: '0 0 15px rgba(255,255,255,0.2)' }}
               >{easy}</div>
-              <div className="text-[11px] font-medium uppercase tracking-[0.15em] text-white/20"
+              <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-white/30"
                 style={{ fontFamily: appleFont }}
               >Easy</div>
             </div>
             <div>
-              <div className="text-[24px] font-bold tracking-[-0.02em] leading-none text-white/50 mb-1"
-                style={{ fontFamily: appleFontDisplay }}
+              <div className="text-[28px] font-bold tracking-[-0.02em] leading-none text-white/70 mb-2"
+                style={{ fontFamily: appleFontDisplay, textShadow: '0 0 15px rgba(255,255,255,0.2)' }}
               >{medium}</div>
-              <div className="text-[11px] font-medium uppercase tracking-[0.15em] text-white/20"
+              <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-white/30"
                 style={{ fontFamily: appleFont }}
               >Medium</div>
             </div>
             <div>
-              <div className="text-[24px] font-bold tracking-[-0.02em] leading-none text-white/50 mb-1"
-                style={{ fontFamily: appleFontDisplay }}
+              <div className="text-[28px] font-bold tracking-[-0.02em] leading-none text-white/70 mb-2"
+                style={{ fontFamily: appleFontDisplay, textShadow: '0 0 15px rgba(255,255,255,0.2)' }}
               >{hard}</div>
-              <div className="text-[11px] font-medium uppercase tracking-[0.15em] text-white/20"
+              <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-white/30"
                 style={{ fontFamily: appleFont }}
               >Hard</div>
             </div>
@@ -283,9 +285,9 @@ export function PlatformsSection() {
 
         {/* Rating graphs */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          <RatingCard title="LeetCode" subLabel="Contest Rating" rating={lcCurrent} history={lcHistory} delay={0.05} />
-          <RatingCard title="Codeforces" subLabel={cfRank} rating={cfCurrent} history={cfHistory} delay={0.1} />
-          <RatingCard title="CodeChef" subLabel={ccStars} rating={ccCurrent} history={ccHistory} delay={0.15} />
+          <RatingCard title="LeetCode" subLabel="Contest Rating" rating={lcCurrent} history={lcHistory} delay={0.05} color="#FFA116" glowColor="rgba(255,161,22,0.2)" />
+          <RatingCard title="Codeforces" subLabel={cfRank} rating={cfCurrent} history={cfHistory} delay={0.1} color="#3B82F6" glowColor="rgba(59,130,246,0.2)" />
+          <RatingCard title="CodeChef" subLabel={ccStars} rating={ccCurrent} history={ccHistory} delay={0.15} color="#C0713B" glowColor="rgba(192,113,59,0.2)" />
         </div>
 
         {/* Topic tags */}
@@ -306,16 +308,23 @@ export function PlatformsSection() {
             {topTopics.map((t, i) => (
               <motion.span
                 key={i}
-                whileHover={{ scale: 1.04 }}
-                className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-[12px] font-medium text-white/40 hover:text-white/70 transition-colors duration-300 cursor-default"
+                initial={{ opacity: 0, y: 8 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: 0.25 + i * 0.04 }}
+                whileHover={{ scale: 1.1, boxShadow: '0 0 25px rgba(255,255,255,0.25)' }}
+                whileTap={{ scale: 0.95 }}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-[12px] font-semibold text-white/60 hover:text-white/90 transition-all duration-300 cursor-default"
                 style={{
                   fontFamily: appleFont,
-                  background: 'rgba(255,255,255,0.03)',
-                  border: '1px solid rgba(255,255,255,0.06)',
+                  background: 'rgba(255,255,255,0.08)',
+                  border: '1px solid rgba(255,255,255,0.15)',
+                  boxShadow: '0 0 15px rgba(255,255,255,0.08)',
+                  backdropFilter: 'blur(6px)',
                 }}
               >
                 {t.name}
-                <span className="text-[10px] text-white/20 tabular-nums">{t.count}</span>
+                <span className="text-[10px] text-white/30 tabular-nums">{t.count}</span>
               </motion.span>
             ))}
           </div>

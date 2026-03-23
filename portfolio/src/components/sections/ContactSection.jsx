@@ -58,12 +58,18 @@ function IconCodeChef({ className = '' }) {
 function SocialLink({ href, label, children }) {
   return (
     <motion.a
-      whileHover={{ y: -3 }}
+      whileHover={{ y: -4, scale: 1.15, boxShadow: '0 0 25px rgba(255,255,255,0.3)', borderColor: 'rgba(255,255,255,0.6)' }}
+      whileTap={{ scale: 0.95 }}
       href={href}
       target="_blank"
       rel="noreferrer"
-      className="flex h-10 w-10 items-center justify-center rounded-xl text-white/25 hover:text-white/60 transition-all duration-300"
-      style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}
+      className="flex h-12 w-12 items-center justify-center rounded-2xl text-white/50 hover:text-white transition-colors duration-300"
+      style={{ 
+        background: 'rgba(255,255,255,0.06)', 
+        border: '1px solid rgba(255,255,255,0.15)',
+        boxShadow: '0 0 15px rgba(255,255,255,0.05)',
+        backdropFilter: 'blur(8px)',
+      }}
       aria-label={label}
     >
       {children}
@@ -95,8 +101,8 @@ export function ContactSection({ config = CONFIG }) {
   }
 
   return (
-    <section id="contact" className="relative min-h-screen bg-[#1a1a2e] snap-start flex flex-col justify-center">
-      <div className="relative mx-auto w-full max-w-5xl px-6 py-28 md:py-36">
+    <section id="contact" className="relative min-h-screen bg-transparent snap-start flex flex-col">
+      <div className="relative mx-auto w-full max-w-5xl px-6 pt-12 pb-28 md:pt-16 md:pb-36">
 
         <motion.p
           initial={{ opacity: 0, y: 16 }}
@@ -159,11 +165,22 @@ export function ContactSection({ config = CONFIG }) {
                   style={{ fontFamily: appleFont }}
                 >Name</label>
                 <input type="text" name="name" required disabled={status === 'submitting'}
-                  className="w-full rounded-xl px-4 py-3 text-[15px] text-white/80 bg-transparent focus:outline-none transition-all disabled:opacity-50"
+                  className="w-full rounded-2xl px-5 py-4 text-[15px] font-medium text-white/90 focus:outline-none transition-all duration-300 disabled:opacity-50"
                   style={{
                     fontFamily: appleFont,
-                    background: 'rgba(255,255,255,0.03)',
-                    border: '1px solid rgba(255,255,255,0.08)',
+                    background: 'rgba(255,255,255,0.05)',
+                    border: '1px solid rgba(255,255,255,0.15)',
+                    boxShadow: 'inset 0 2px 5px rgba(0,0,0,0.5), 0 0 10px rgba(255,255,255,0.02)',
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.background = 'rgba(255,255,255,0.1)';
+                    e.target.style.border = '1px solid rgba(255,255,255,0.5)';
+                    e.target.style.boxShadow = '0 0 25px rgba(255,255,255,0.2)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.background = 'rgba(255,255,255,0.05)';
+                    e.target.style.border = '1px solid rgba(255,255,255,0.15)';
+                    e.target.style.boxShadow = 'inset 0 2px 5px rgba(0,0,0,0.5), 0 0 10px rgba(255,255,255,0.02)';
                   }}
                 />
               </div>
@@ -172,11 +189,22 @@ export function ContactSection({ config = CONFIG }) {
                   style={{ fontFamily: appleFont }}
                 >Email</label>
                 <input type="email" name="email" required disabled={status === 'submitting'}
-                  className="w-full rounded-xl px-4 py-3 text-[15px] text-white/80 bg-transparent focus:outline-none transition-all disabled:opacity-50"
+                  className="w-full rounded-2xl px-5 py-4 text-[15px] font-medium text-white/90 focus:outline-none transition-all duration-300 disabled:opacity-50"
                   style={{
                     fontFamily: appleFont,
-                    background: 'rgba(255,255,255,0.03)',
-                    border: '1px solid rgba(255,255,255,0.08)',
+                    background: 'rgba(255,255,255,0.05)',
+                    border: '1px solid rgba(255,255,255,0.15)',
+                    boxShadow: 'inset 0 2px 5px rgba(0,0,0,0.5), 0 0 10px rgba(255,255,255,0.02)',
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.background = 'rgba(255,255,255,0.1)';
+                    e.target.style.border = '1px solid rgba(255,255,255,0.5)';
+                    e.target.style.boxShadow = '0 0 25px rgba(255,255,255,0.2)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.background = 'rgba(255,255,255,0.05)';
+                    e.target.style.border = '1px solid rgba(255,255,255,0.15)';
+                    e.target.style.boxShadow = 'inset 0 2px 5px rgba(0,0,0,0.5), 0 0 10px rgba(255,255,255,0.02)';
                   }}
                 />
               </div>
@@ -185,33 +213,46 @@ export function ContactSection({ config = CONFIG }) {
                   style={{ fontFamily: appleFont }}
                 >Message</label>
                 <textarea name="message" required rows={4} disabled={status === 'submitting'}
-                  className="w-full rounded-xl px-4 py-3 text-[15px] text-white/80 bg-transparent focus:outline-none transition-all disabled:opacity-50 resize-none"
+                  className="w-full rounded-2xl px-5 py-4 text-[15px] font-medium text-white/90 focus:outline-none transition-all duration-300 disabled:opacity-50 resize-none"
                   style={{
                     fontFamily: appleFont,
-                    background: 'rgba(255,255,255,0.03)',
-                    border: '1px solid rgba(255,255,255,0.08)',
+                    background: 'rgba(255,255,255,0.05)',
+                    border: '1px solid rgba(255,255,255,0.15)',
+                    boxShadow: 'inset 0 2px 5px rgba(0,0,0,0.5), 0 0 10px rgba(255,255,255,0.02)',
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.background = 'rgba(255,255,255,0.1)';
+                    e.target.style.border = '1px solid rgba(255,255,255,0.5)';
+                    e.target.style.boxShadow = '0 0 25px rgba(255,255,255,0.2)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.background = 'rgba(255,255,255,0.05)';
+                    e.target.style.border = '1px solid rgba(255,255,255,0.15)';
+                    e.target.style.boxShadow = 'inset 0 2px 5px rgba(0,0,0,0.5), 0 0 10px rgba(255,255,255,0.02)';
                   }}
                 ></textarea>
               </div>
-              <button
+              <motion.button
+                whileHover={status === 'idle' ? { scale: 1.02, boxShadow: '0 0 30px rgba(255,255,255,0.25)', borderColor: 'rgba(255,255,255,0.6)', backgroundColor: 'rgba(255,255,255,0.12)' } : {}}
+                whileTap={status === 'idle' ? { scale: 0.98 } : {}}
                 type="submit"
                 disabled={status === 'submitting'}
-                className={`w-full py-3 mt-2 rounded-xl text-[14px] font-semibold tracking-wide transition-all duration-300 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed ${
-                  status === 'success' ? 'text-white/60' :
-                  status === 'error' ? 'text-white/60' :
-                  'text-white/70 hover:text-white'
+                className={`w-full py-4 mt-6 rounded-2xl text-[15px] font-bold tracking-wide transition-all duration-300 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed ${
+                  status === 'success' || status === 'error' ? 'text-white/60' : 'text-white'
                 }`}
                 style={{
                   fontFamily: appleFont,
-                  background: status === 'idle' || status === 'submitting' ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.03)',
-                  border: '1px solid rgba(255,255,255,0.08)',
+                  background: status === 'idle' || status === 'submitting' ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.04)',
+                  border: '1px solid rgba(255,255,255,0.2)',
+                  boxShadow: '0 0 15px rgba(255,255,255,0.05)',
+                  backdropFilter: 'blur(8px)',
                 }}
               >
                 {status === 'submitting' && <span className="w-4 h-4 border-2 border-white/30 border-t-transparent rounded-full animate-spin" />}
                 {status === 'success' && 'Message sent!'}
                 {status === 'error' && 'Something went wrong'}
                 {(status === 'idle' || status === 'submitting') && 'Send Message'}
-              </button>
+              </motion.button>
             </form>
           </motion.div>
 
@@ -223,13 +264,17 @@ export function ContactSection({ config = CONFIG }) {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="flex flex-col justify-center gap-6"
           >
-            <button
+            <motion.button
+              whileHover={{ scale: 1.02, boxShadow: '0 0 25px rgba(255,255,255,0.2)', borderColor: 'rgba(255,255,255,0.4)', backgroundColor: 'rgba(255,255,255,0.08)' }}
+              whileTap={{ scale: 0.98 }}
               type="button"
               onClick={onCopy}
-              className="w-full rounded-xl px-5 py-4 text-left transition-all duration-300 cursor-pointer"
+              className="w-full rounded-2xl px-6 py-5 text-left transition-all duration-300 cursor-pointer"
               style={{
-                background: copied ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.03)',
-                border: '1px solid rgba(255,255,255,0.08)',
+                background: copied ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.05)',
+                border: copied ? '1px solid rgba(255,255,255,0.4)' : '1px solid rgba(255,255,255,0.15)',
+                boxShadow: copied ? '0 0 20px rgba(255,255,255,0.2)' : '0 0 15px rgba(255,255,255,0.03)',
+                backdropFilter: 'blur(8px)',
               }}
             >
               <div className="flex items-center justify-between gap-4">
@@ -242,21 +287,25 @@ export function ContactSection({ config = CONFIG }) {
                   {copied ? 'Copied' : 'Copy'}
                 </span>
               </div>
-            </button>
+            </motion.button>
 
-            <a
+            <motion.a
+              whileHover={{ scale: 1.02, boxShadow: '0 0 25px rgba(255,255,255,0.2)', borderColor: 'rgba(255,255,255,0.4)', backgroundColor: 'rgba(255,255,255,0.08)' }}
+              whileTap={{ scale: 0.98 }}
               href="/UPDATED_CV_IPSITA.pdf"
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full rounded-xl px-5 py-4 text-center text-[14px] font-medium text-white/50 hover:text-white/75 transition-all duration-300"
+              className="w-full rounded-2xl px-6 py-5 text-center text-[15px] font-bold text-white/70 hover:text-white transition-all duration-300"
               style={{
                 fontFamily: appleFont,
-                background: 'rgba(255,255,255,0.03)',
-                border: '1px solid rgba(255,255,255,0.08)',
+                background: 'rgba(255,255,255,0.05)',
+                border: '1px solid rgba(255,255,255,0.15)',
+                boxShadow: '0 0 15px rgba(255,255,255,0.03)',
+                backdropFilter: 'blur(8px)',
               }}
             >
               Download Resume
-            </a>
+            </motion.a>
 
             <div className="w-10 h-px bg-white/[0.06] my-2" />
 
