@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { CONFIG } from '../../config/CONFIG'
-import { Reveal } from '../common/Reveal'
+
+const appleFont = "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter', sans-serif"
+const appleFontDisplay = "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif"
 
 function IconGitHub({ className = '' }) {
   return (
@@ -53,27 +55,25 @@ function IconCodeChef({ className = '' }) {
   )
 }
 
-function IconLink({ href, label, children }) {
+function SocialLink({ href, label, children }) {
   return (
     <motion.a
-      whileHover={{ y: -4, scale: 1.05 }}
+      whileHover={{ y: -3 }}
       href={href}
       target="_blank"
       rel="noreferrer"
-      className="group relative flex items-center justify-center w-14 h-14 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-md hover:border-cyan-400/50 hover:bg-white/[0.08] transition-all shadow-lg"
+      className="flex h-10 w-10 items-center justify-center rounded-xl text-white/25 hover:text-white/60 transition-all duration-300"
+      style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}
       aria-label={label}
     >
-      {/* Glow Effect */}
-      <div className="absolute inset-0 bg-cyan-400/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl pointer-events-none" />
-      <div className="relative z-10 text-white group-hover:text-cyan-400 transition-colors">
-        {children}
-      </div>
+      {children}
     </motion.a>
   )
 }
 
 export function ContactSection({ config = CONFIG }) {
   const [copied, setCopied] = useState(false)
+  const [status, setStatus] = useState('idle')
 
   const onCopy = async () => {
     try {
@@ -95,86 +95,182 @@ export function ContactSection({ config = CONFIG }) {
   }
 
   return (
-    <section id="contact" className="bg-[#06060e] relative py-32 overflow-hidden">
-      {/* Background Glow */}
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-cyan-600/10 blur-[180px] rounded-full pointer-events-none" />
+    <section id="contact" className="relative min-h-screen bg-[#1a1a2e] snap-start flex flex-col justify-center">
+      <div className="relative mx-auto w-full max-w-5xl px-6 py-28 md:py-36">
 
-      <div className="mx-auto max-w-[1200px] px-5 relative z-10 pb-20">
-        <Reveal className="flex flex-col items-center text-center space-y-12 bg-white/[0.02] border border-white/10 p-12 md:p-20 rounded-[3rem] backdrop-blur-xl shadow-2xl relative overflow-hidden">
-          {/* Inner Light Flare */}
-          <div className="absolute top-0 w-full h-[1px] bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent opacity-50" />
+        <motion.p
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-[13px] font-semibold uppercase tracking-[0.2em] text-white/30 mb-6"
+          style={{ fontFamily: appleFont }}
+        >
+          Contact
+        </motion.p>
 
-          <div className="space-y-4">
-            <h2 className="font-bebas text-transparent bg-clip-text bg-gradient-to-br from-white via-cyan-200 to-cyan-500 text-[clamp(64px,10vw,140px)] leading-[0.85] tracking-tight drop-shadow-[0_0_40px_rgba(34,211,238,0.2)]">
-              LET'S BUILD.
-            </h2>
-            <p className="font-jetbrains text-[#8a94b5] text-lg max-w-xl mx-auto">
-              Open for accelerating your team, consulting, or highly challenging engineering problems. Let's make it happen.
-            </p>
-          </div>
+        <motion.h2
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7, delay: 0.05 }}
+          className="text-[48px] md:text-[72px] lg:text-[88px] font-bold leading-[1] tracking-[-0.04em] text-white mb-6"
+          style={{ fontFamily: appleFontDisplay }}
+        >
+          Let's connect.
+        </motion.h2>
 
-          <div className="flex flex-col items-center gap-8 w-full max-w-md">
+        <motion.p
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          className="text-[17px] leading-[1.6] text-white/40 max-w-xl mb-16"
+          style={{ fontFamily: appleFont }}
+        >
+          Open to impactful opportunities in AI/ML, backend systems, and performance engineering.
+        </motion.p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
+          {/* Form */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.15 }}
+          >
+            <form
+              className="space-y-5"
+              onSubmit={async (e) => {
+                e.preventDefault();
+                setStatus('submitting');
+                const fd = new FormData(e.target);
+                fd.append("access_key", config.web3formsKey || "YOUR_ACCESS_KEY_HERE");
+                try {
+                  const res = await fetch("https://api.web3forms.com/submit", { method: "POST", body: fd });
+                  const data = await res.json();
+                  if (data.success) { setStatus('success'); e.target.reset(); setTimeout(() => setStatus('idle'), 5000); }
+                  else { setStatus('error'); setTimeout(() => setStatus('idle'), 5000); }
+                } catch { setStatus('error'); setTimeout(() => setStatus('idle'), 5000); }
+              }}
+            >
+              <div className="space-y-1.5">
+                <label className="text-[12px] font-medium uppercase tracking-[0.12em] text-white/25 pl-1"
+                  style={{ fontFamily: appleFont }}
+                >Name</label>
+                <input type="text" name="name" required disabled={status === 'submitting'}
+                  className="w-full rounded-xl px-4 py-3 text-[15px] text-white/80 bg-transparent focus:outline-none transition-all disabled:opacity-50"
+                  style={{
+                    fontFamily: appleFont,
+                    background: 'rgba(255,255,255,0.03)',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                  }}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-[12px] font-medium uppercase tracking-[0.12em] text-white/25 pl-1"
+                  style={{ fontFamily: appleFont }}
+                >Email</label>
+                <input type="email" name="email" required disabled={status === 'submitting'}
+                  className="w-full rounded-xl px-4 py-3 text-[15px] text-white/80 bg-transparent focus:outline-none transition-all disabled:opacity-50"
+                  style={{
+                    fontFamily: appleFont,
+                    background: 'rgba(255,255,255,0.03)',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                  }}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-[12px] font-medium uppercase tracking-[0.12em] text-white/25 pl-1"
+                  style={{ fontFamily: appleFont }}
+                >Message</label>
+                <textarea name="message" required rows={4} disabled={status === 'submitting'}
+                  className="w-full rounded-xl px-4 py-3 text-[15px] text-white/80 bg-transparent focus:outline-none transition-all disabled:opacity-50 resize-none"
+                  style={{
+                    fontFamily: appleFont,
+                    background: 'rgba(255,255,255,0.03)',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                  }}
+                ></textarea>
+              </div>
+              <button
+                type="submit"
+                disabled={status === 'submitting'}
+                className={`w-full py-3 mt-2 rounded-xl text-[14px] font-semibold tracking-wide transition-all duration-300 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed ${
+                  status === 'success' ? 'text-white/60' :
+                  status === 'error' ? 'text-white/60' :
+                  'text-white/70 hover:text-white'
+                }`}
+                style={{
+                  fontFamily: appleFont,
+                  background: status === 'idle' || status === 'submitting' ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.03)',
+                  border: '1px solid rgba(255,255,255,0.08)',
+                }}
+              >
+                {status === 'submitting' && <span className="w-4 h-4 border-2 border-white/30 border-t-transparent rounded-full animate-spin" />}
+                {status === 'success' && 'Message sent!'}
+                {status === 'error' && 'Something went wrong'}
+                {(status === 'idle' || status === 'submitting') && 'Send Message'}
+              </button>
+            </form>
+          </motion.div>
+
+          {/* Right side */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="flex flex-col justify-center gap-6"
+          >
             <button
               type="button"
               onClick={onCopy}
-              className={[
-                'group relative w-full flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-2xl border backdrop-blur-md transition-all duration-300 overflow-hidden',
-                copied
-                  ? 'bg-cyan-500/10 border-cyan-400/50 shadow-[0_0_30px_rgba(34,211,238,0.2)] text-white'
-                  : 'bg-white/[0.03] border-white/10 hover:border-cyan-400/30 hover:bg-white/[0.06] text-white'
-              ].join(' ')}
+              className="w-full rounded-xl px-5 py-4 text-left transition-all duration-300 cursor-pointer"
+              style={{
+                background: copied ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.03)',
+                border: '1px solid rgba(255,255,255,0.08)',
+              }}
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/0 via-cyan-500/10 to-transparent -translate-x-[100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none" />
-
-              <span className="font-jetbrains font-bold text-lg sm:text-xl truncate px-2 relative z-10">
-                {config.email}
-              </span>
-              <span className={`px-4 py-2 rounded-xl font-jetbrains text-xs font-bold tracking-widest uppercase transition-colors relative z-10 ${copied ? 'bg-cyan-400 text-[#06060e]' : 'bg-white/10 group-hover:bg-cyan-400 group-hover:text-[#06060e]'}`}>
-                {copied ? 'COPIED!' : 'COPY EMAIL'}
-              </span>
+              <div className="flex items-center justify-between gap-4">
+                <span className="truncate text-[15px] font-medium text-white/60" style={{ fontFamily: appleFont }}>
+                  {config.email}
+                </span>
+                <span className="text-[11px] font-semibold uppercase tracking-wider text-white/30 flex-shrink-0"
+                  style={{ fontFamily: appleFont }}
+                >
+                  {copied ? 'Copied' : 'Copy'}
+                </span>
+              </div>
             </button>
 
             <a
-              href="/resume.pdf"
+              href="/UPDATED_CV_IPSITA.pdf"
               target="_blank"
               rel="noopener noreferrer"
-              className="group relative w-full flex items-center justify-center gap-3 px-8 py-4 rounded-2xl bg-white/[0.03] border border-white/10 text-white font-jetbrains font-bold tracking-widest text-sm uppercase overflow-hidden backdrop-blur-md hover:border-cyan-400/30 hover:bg-white/[0.06] transition-all duration-300"
+              className="w-full rounded-xl px-5 py-4 text-center text-[14px] font-medium text-white/50 hover:text-white/75 transition-all duration-300"
+              style={{
+                fontFamily: appleFont,
+                background: 'rgba(255,255,255,0.03)',
+                border: '1px solid rgba(255,255,255,0.08)',
+              }}
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/0 via-cyan-500/10 to-transparent -translate-x-[100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none" />
-              <span className="relative z-10 flex items-center gap-3 group-hover:text-cyan-400 transition-colors duration-300">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                  <polyline points="7 10 12 15 17 10" />
-                  <line x1="12" y1="15" x2="12" y2="3" />
-                </svg>
-                DOWNLOAD RESUME
-              </span>
+              Download Resume
             </a>
 
-            <div className="flex items-center justify-center gap-4 flex-wrap">
-              <IconLink href={config.socials.github} label="GitHub">
-                <IconGitHub className="w-6 h-6" />
-              </IconLink>
-              <IconLink href={config.socials.linkedin} label="LinkedIn">
-                <IconLinkedIn className="w-6 h-6" />
-              </IconLink>
-              <IconLink href={config.socials.codeforces} label="Codeforces">
-                <IconCodeforces className="w-6 h-6" />
-              </IconLink>
-              <IconLink href={config.socials.codechef} label="CodeChef">
-                <IconCodeChef className="w-6 h-6" />
-              </IconLink>
-              <IconLink href={config.socials.leetcode} label="LeetCode">
-                <IconLeetCode className="w-6 h-6" />
-              </IconLink>
-              <IconLink href={config.socials.twitterX} label="Twitter/X">
-                <IconX className="w-6 h-6" />
-              </IconLink>
+            <div className="w-10 h-px bg-white/[0.06] my-2" />
+
+            <div className="flex flex-wrap items-center gap-2.5">
+              <SocialLink href={config.socials.github} label="GitHub"><IconGitHub className="h-4 w-4" /></SocialLink>
+              <SocialLink href={config.socials.linkedin} label="LinkedIn"><IconLinkedIn className="h-4 w-4" /></SocialLink>
+              <SocialLink href={config.socials.codeforces} label="Codeforces"><IconCodeforces className="h-4 w-4" /></SocialLink>
+              <SocialLink href={config.socials.codechef} label="CodeChef"><IconCodeChef className="h-4 w-4" /></SocialLink>
+              <SocialLink href={config.socials.leetcode} label="LeetCode"><IconLeetCode className="h-4 w-4" /></SocialLink>
+              <SocialLink href={config.socials.twitterX} label="Twitter/X"><IconX className="h-4 w-4" /></SocialLink>
             </div>
-          </div>
-        </Reveal>
+          </motion.div>
+        </div>
       </div>
     </section>
   )
 }
-

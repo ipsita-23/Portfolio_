@@ -1,298 +1,327 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { motion } from 'framer-motion'
-import { CONFIG } from '../../config/CONFIG'
-import { isPlaceholderHandle } from '../../lib/streaks'
-import { Reveal } from '../common/Reveal'
+import { LineChart, Line, Tooltip, ResponsiveContainer } from 'recharts'
 
-function ArcRing({ label, value, total, color = '#38bdf8' }) {
-  const size = 72
-  const r = 26
-  const c = 2 * Math.PI * r
-  const progress = total > 0 ? Math.max(0, Math.min(1, value / total)) : 0
-  const dashOffset = c * (1 - progress)
+const appleFont = "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter', sans-serif"
+const appleFontDisplay = "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif"
 
+function CustomTooltip({ active, payload }) {
+  if (active && payload && payload.length) {
+    return (
+      <div className="px-3 py-2 rounded-lg"
+        style={{
+          background: 'rgba(30,30,50,0.9)',
+          backdropFilter: 'blur(12px)',
+          border: '1px solid rgba(255,255,255,0.08)',
+          boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
+        }}
+      >
+        <p className="text-white/90 text-[13px] font-semibold" style={{ fontFamily: appleFont }}>
+          {payload[0].value}
+        </p>
+        <p className="text-white/30 text-[10px] mt-0.5" style={{ fontFamily: appleFont }}>
+          {payload[0].payload.name}
+        </p>
+      </div>
+    )
+  }
+  return null
+}
+
+function RatingCard({ title, subLabel, rating, history, delay = 0 }) {
   return (
-    <div className="flex flex-col items-center gap-2">
-      <svg width={size} height={size} viewBox="0 0 72 72">
-        <circle cx="36" cy="36" r={r} stroke="rgba(255,255,255,0.05)" strokeWidth="6" fill="none" />
-        <motion.circle
-          cx="36"
-          cy="36"
-          r={r}
-          stroke={color}
-          strokeWidth="6"
-          fill="none"
-          strokeLinecap="round"
-          strokeDasharray={c}
-          strokeDashoffset={c}
-          animate={{ strokeDashoffset: dashOffset }}
-          transition={{ duration: 1.2, ease: 'easeOut', delay: 0.2 }}
-          style={{ rotate: '-90deg', transformOrigin: '36px 36px' }}
-        />
-      </svg>
-      <div className="text-center">
-        <div className="font-jetbrains text-white font-bold text-[16px] leading-none mb-1">
-          {value}
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6, delay }}
+      className="rounded-2xl overflow-hidden group cursor-default"
+      style={{
+        background: 'rgba(255,255,255,0.03)',
+        border: '1px solid rgba(255,255,255,0.06)',
+      }}
+    >
+      <div className="p-6 md:p-8">
+        {/* Header */}
+        <div className="flex items-start justify-between mb-1">
+          <div>
+            <h3 className="text-[22px] font-bold tracking-[-0.02em] text-white/90"
+              style={{ fontFamily: appleFontDisplay }}
+            >
+              {title}
+            </h3>
+            <p className="text-[12px] font-medium uppercase tracking-[0.12em] text-white/25 mt-1"
+              style={{ fontFamily: appleFont }}
+            >
+              {subLabel}
+            </p>
+          </div>
+          <div className="text-right">
+            <div className="text-[36px] font-bold tracking-[-0.03em] leading-none text-white/80"
+              style={{ fontFamily: appleFontDisplay }}
+            >
+              {rating}
+            </div>
+          </div>
         </div>
-        <div className="font-jetbrains text-[#8a94b5] text-[10px] uppercase tracking-wider">
-          {label}
+
+        {/* Graph */}
+        <div className="w-full h-[240px] lg:h-[280px] mt-4">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={history} margin={{ top: 16, right: 4, left: 4, bottom: 0 }}>
+              <Tooltip content={<CustomTooltip />} />
+              <Line
+                type="monotone"
+                dataKey="rating"
+                stroke="rgba(255,255,255,0.35)"
+                strokeWidth={2}
+                dot={false}
+                activeDot={{ r: 5, fill: 'rgba(255,255,255,0.7)', stroke: 'rgba(255,255,255,0.1)', strokeWidth: 6 }}
+                animationDuration={2000}
+              />
+            </LineChart>
+          </ResponsiveContainer>
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }
 
-function SkeletonRow({ height = 18 }) {
-  return (
-    <div className="h-[14px] bg-white/[0.04] rounded-md overflow-hidden relative">
-      <div className="skeleton-shimmer absolute inset-0" style={{ height }} />
-    </div>
-  )
-}
+import codolioData from '../../data/codolio.json'
 
-export function PlatformsSection({ onLeetCodeSolved }) {
-  const [leetcodeLoading, setLeetcodeLoading] = useState(false)
-  const [leetcode, setLeetCode] = useState({ easy: 0, medium: 0, hard: 0 })
+export function PlatformsSection() {
+  const profiles = codolioData.data.platformProfiles.platformProfiles || []
 
-  const [cfLoading, setCfLoading] = useState(false)
-  const [cf, setCf] = useState({ rating: 0, rank: '-', maxRating: 0 })
+  // LeetCode
+  const lcProfile = profiles.find(p => p.platform === 'leetcode')
+  const lcHistory = useMemo(() => {
+    if (!lcProfile?.contestActivityStats?.contestActivityList) return []
+    return lcProfile.contestActivityStats.contestActivityList.map(c => ({
+      name: c.contestName,
+      rating: c.rating
+    }))
+  }, [lcProfile])
+  const lcCurrent = lcProfile?.userStats?.currentRating || 0
 
-  const cc = { rating: 1474, stars: '2★', solved: 304, globalRank: 858 }
+  // Codeforces
+  const cfProfile = profiles.find(p => p.platform === 'codeforces')
+  const cfHistory = useMemo(() => {
+    if (!cfProfile?.contestActivityStats?.contestActivityList) return []
+    return cfProfile.contestActivityStats.contestActivityList.map(c => ({
+      name: c.contestName,
+      rating: c.rating
+    }))
+  }, [cfProfile])
+  const cfCurrent = cfProfile?.userStats?.currentRating || 0
+  const cfRank = cfProfile?.userStats?.rank || '-'
 
-  useEffect(() => {
-    let mounted = true
-    const run = async () => {
-      try {
-        if (isPlaceholderHandle(CONFIG.leetcode.username)) {
-          setLeetCode({ easy: 0, medium: 0, hard: 0 })
-          onLeetCodeSolved?.(0)
-          return
-        }
-        setLeetcodeLoading(true)
-        const res = await fetch(`https://alfa-leetcode-api.onrender.com/${encodeURIComponent(CONFIG.leetcode.username)}/solved`)
-        if (!res.ok) throw new Error(`LeetCode fetch failed: ${res.status}`)
-        const json = await res.json()
-        const easy = Number(json.easySolved || 0)
-        const medium = Number(json.mediumSolved || 0)
-        const hard = Number(json.hardSolved || 0)
-        const total = easy + medium + hard
-        if (!mounted) return
-        setLeetCode({ easy, medium, hard })
-        onLeetCodeSolved?.(total)
-      } catch {
-        if (!mounted) return
-        setLeetCode({ easy: 0, medium: 0, hard: 0 })
-        onLeetCodeSolved?.(0)
-      } finally {
-        if (!mounted) return
-        setLeetcodeLoading(false)
+  // CodeChef
+  const ccProfile = profiles.find(p => p.platform === 'codechef')
+  const ccHistory = useMemo(() => {
+    if (!ccProfile?.contestActivityStats?.contestActivityList) return []
+    return ccProfile.contestActivityStats.contestActivityList.map(c => ({
+      name: c.contestName,
+      rating: c.rating
+    }))
+  }, [ccProfile])
+  const ccCurrent = ccProfile?.userStats?.currentRating || 0
+  const ccStars = ccProfile?.userStats?.stars ? `${ccProfile.userStats.stars}★` : '-'
+
+  // Aggregated Problem Stats
+  const { totalSolved, easy, medium, hard, platformCounts, topTopics } = useMemo(() => {
+    let t = 0, e = 0, m = 0, h = 0;
+    const pc = [];
+    const topicsMap = {};
+
+    profiles.forEach(p => {
+      const q = p.totalQuestionStats;
+      if (q && q.totalQuestionCounts) {
+        t += q.totalQuestionCounts;
+        e += q.easyQuestionCounts || 0;
+        m += q.mediumQuestionCounts || 0;
+        h += q.hardQuestionCounts || 0;
+        
+        let pName = p.platform;
+        if (pName === 'leetcode') pName = 'LeetCode';
+        else if (pName === 'codeforces') pName = 'Codeforces';
+        else if (pName === 'codechef') pName = 'CodeChef';
+        else if (pName === 'geeksforgeeks') pName = 'GeeksforGeeks';
+        else if (pName === 'interviewbit') pName = 'InterviewBit';
+        else if (pName === 'hackerrank') pName = 'HackerRank';
+        
+        pc.push({ name: pName, count: q.totalQuestionCounts });
       }
-    }
-    run()
-    return () => { mounted = false }
-  }, [onLeetCodeSolved])
 
-  useEffect(() => {
-    let mounted = true
-    const run = async () => {
-      try {
-        if (isPlaceholderHandle(CONFIG.codeforces.handle)) {
-          setCf({ rating: 0, rank: '-', maxRating: 0 })
-          return
-        }
-        setCfLoading(true)
-        const res = await fetch(`https://codeforces.com/api/user.info?handles=${encodeURIComponent(CONFIG.codeforces.handle)}`)
-        if (!res.ok) throw new Error(`Codeforces fetch failed: ${res.status}`)
-        const json = await res.json()
-        const item = json?.result?.[0]
-        const rating = Number(item?.rating || 0)
-        const maxRating = Number(item?.maxRating || 0)
-        const rank = item?.rank || '-'
-        if (!mounted) return
-        setCf({ rating, rank, maxRating })
-      } catch {
-        if (!mounted) return
-        setCf({ rating: 0, rank: '-', maxRating: 0 })
-      } finally {
-        if (!mounted) return
-        setCfLoading(false)
+      const dist1 = p.topicAnalysisStats?.topicWiseDistribution;
+      const dist2 = p.dailyActivityStatsResponse?.topicWiseDistribution;
+      
+      if (dist1) {
+        Object.entries(dist1).forEach(([k, v]) => {
+          const title = k.charAt(0).toUpperCase() + k.slice(1);
+          topicsMap[title] = (topicsMap[title] || 0) + v
+        })
       }
-    }
-    run()
-    return () => { mounted = false }
-  }, [])
+      if (dist2) {
+        Object.entries(dist2).forEach(([k, v]) => {
+          const title = k.charAt(0).toUpperCase() + k.slice(1);
+          topicsMap[title] = (topicsMap[title] || 0) + v
+        })
+      }
+    })
 
-  const leetTotal = leetcode.easy + leetcode.medium + leetcode.hard
+    const top = Object.entries(topicsMap)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 24)
+      .map(([name, count]) => ({ name, count }));
 
-  const cards = useMemo(
-    () => [
-      {
-        key: 'leetcode',
-        title: 'LeetCode',
-        gradient: 'from-orange-400 to-amber-500',
-        shadow: 'hover:shadow-[0_10px_40px_-10px_rgba(251,146,60,0.2)]',
-        border: 'hover:border-orange-500/40',
-        content: (
-          <div className="space-y-6">
-            <div className="bg-white/[0.03] border border-white/[0.05] rounded-2xl p-5">
-              {leetcodeLoading ? (
-                <div className="space-y-4">
-                  <SkeletonRow />
-                  <div className="flex gap-6 items-center justify-center pt-2">
-                    {Array.from({ length: 3 }).map((_, i) => (
-                      <div key={i} className="w-[72px] h-[72px] rounded-full bg-white/[0.02] shimmer-box" />
-                    ))}
-                  </div>
-                </div>
-              ) : (
-                <div className="flex gap-2 sm:gap-6 items-start justify-between">
-                  <ArcRing label="Easy" value={leetcode.easy} total={leetTotal} color="#34d399" />
-                  <ArcRing label="Medium" value={leetcode.medium} total={leetTotal} color="#fbbf24" />
-                  <ArcRing label="Hard" value={leetcode.hard} total={leetTotal} color="#f87171" />
-                </div>
-              )}
-            </div>
-            <div className="flex items-center justify-between font-jetbrains text-sm">
-              <span className="text-[#8a94b5] uppercase tracking-wider">Total Solved</span>
-              <span className="text-white font-bold px-3 py-1 bg-orange-500/20 text-orange-400 rounded-lg">{leetTotal}</span>
-            </div>
-          </div>
-        ),
-      },
-      {
-        key: 'codeforces',
-        title: 'Codeforces',
-        gradient: 'from-blue-400 to-indigo-500',
-        shadow: 'hover:shadow-[0_10px_40px_-10px_rgba(59,130,246,0.2)]',
-        border: 'hover:border-blue-500/40',
-        content: (
-          <div className="space-y-6">
-            <div className="bg-white/[0.03] border border-white/[0.05] rounded-2xl p-6">
-              {cfLoading ? (
-                <div className="space-y-4">
-                  <SkeletonRow height={24} />
-                  <SkeletonRow height={24} />
-                  <SkeletonRow height={24} />
-                </div>
-              ) : (
-                <div className="space-y-5">
-                  <div className="flex items-center justify-between">
-                    <div className="text-[#8a94b5] font-jetbrains uppercase tracking-wider text-xs">
-                      CURRENT RATING
-                    </div>
-                    <div className="text-white font-bebas tracking-wide text-[38px] leading-none">
-                      {cf.rating}
-                    </div>
-                  </div>
-                  <div className="border-t border-white/5 pt-4 flex items-center justify-between">
-                    <div className="text-[#8a94b5] font-jetbrains uppercase tracking-wider text-xs">
-                      RANK
-                    </div>
-                    <div className="text-blue-400 font-jetbrains font-bold text-[16px] capitalize px-3 py-1 bg-blue-500/10 rounded-lg">
-                      {cf.rank}
-                    </div>
-                  </div>
-                  <div className="border-t border-white/5 pt-4 flex items-center justify-between">
-                    <div className="text-[#8a94b5] font-jetbrains uppercase tracking-wider text-xs">
-                      MAX RATING
-                    </div>
-                    <div className="text-white font-jetbrains font-bold text-[18px]">
-                      {cf.maxRating}
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        ),
-      },
-      {
-        key: 'codechef',
-        title: 'CodeChef',
-        gradient: 'from-emerald-400 to-teal-500',
-        shadow: 'hover:shadow-[0_10px_40px_-10px_rgba(52,211,153,0.2)]',
-        border: 'hover:border-emerald-500/40',
-        content: (
-          <div className="space-y-6">
-            <div className="bg-white/[0.03] border border-white/[0.05] rounded-2xl p-6">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="text-[#8a94b5] font-jetbrains uppercase tracking-wider text-xs">
-                    CURRENT RATING
-                  </div>
-                  <div className="text-white font-bebas tracking-wide text-[38px] leading-none">
-                    {cc.rating}
-                  </div>
-                </div>
-                <div className="border-t border-white/5 pt-4 flex items-center justify-between">
-                  <div className="text-[#8a94b5] font-jetbrains uppercase tracking-wider text-xs">
-                    STARS
-                  </div>
-                  <div className="text-emerald-400 font-jetbrains font-bold text-[16px] px-3 py-1 bg-emerald-500/10 rounded-lg">
-                    {cc.stars}
-                  </div>
-                </div>
-                <div className="border-t border-white/5 pt-4 flex items-center justify-between">
-                  <div className="text-[#8a94b5] font-jetbrains uppercase tracking-wider text-xs">
-                    SOLVED
-                  </div>
-                  <div className="text-white font-jetbrains font-bold text-[18px]">
-                    {cc.solved}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        ),
-      },
-    ],
-    [cf, cfLoading, leetcode, leetcodeLoading, leetTotal, cc]
-  )
+    return { totalSolved: t, easy: e, medium: m, hard: h, platformCounts: pc.sort((a,b) => b.count - a.count), topTopics: top };
+  }, [profiles])
 
   return (
-    <section id="platforms" className="bg-[#06060e] relative py-32 overflow-hidden">
-      {/* Background Glow */}
-      <div className="absolute top-1/4 left-0 w-[600px] h-[600px] bg-blue-600/10 blur-[150px] rounded-full pointer-events-none" />
+    <section id="cp" className="bg-[#1a1a2e] relative overflow-hidden min-h-screen flex flex-col justify-center snap-start">
+      <div className="mx-auto max-w-6xl px-6 py-28 md:py-36 relative z-10">
 
-      <div className="mx-auto max-w-[1200px] px-5 relative z-10">
-        <Reveal className="space-y-4 text-center max-w-3xl mx-auto mb-20">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-md text-white text-sm font-jetbrains uppercase tracking-widest shadow-[0_0_15px_rgba(255,255,255,0.05)]">
-            <span className="w-2 h-2 rounded-full bg-gradient-to-r from-blue-400 to-purple-500 animate-pulse" />
-            Metrics
-          </div>
-          <h2 className="text-[clamp(44px,8vw,96px)] font-bebas font-bold leading-[0.9] tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600">
-            THE ARENA
-          </h2>
-          <p className="text-[#a0a8c0] text-lg font-jetbrains mt-4">
-            Real-time performance statistics tracking algorithmic problem solving globally.
-          </p>
-        </Reveal>
+        {/* Apple-style overline */}
+        <motion.p
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-[13px] font-semibold uppercase tracking-[0.2em] text-white/30 mb-6"
+          style={{ fontFamily: appleFont }}
+        >
+          Competitive Programming
+        </motion.p>
 
-        <Reveal className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {cards.map((c) => (
-            <motion.div
-              key={c.key}
-              whileHover={{ y: -8 }}
-              className={`group p-8 rounded-3xl bg-white/[0.02] border border-white/10 backdrop-blur-xl transition-all duration-500 shadow-2xl relative overflow-hidden ${c.shadow} ${c.border}`}
+        {/* Hero heading */}
+        <motion.h2
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7, delay: 0.05 }}
+          className="text-[48px] md:text-[72px] lg:text-[88px] font-bold leading-[1] tracking-[-0.04em] text-white mb-6"
+          style={{ fontFamily: appleFontDisplay }}
+        >
+          Ratings speak<br />
+          <span className="text-white/25">louder than words.</span>
+        </motion.h2>
+
+        <motion.p
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          className="text-[17px] leading-[1.6] text-white/40 max-w-xl mb-20"
+          style={{ fontFamily: appleFont }}
+        >
+          Live contest rating graphs across all major competitive programming arenas.
+        </motion.p>
+
+        {/* Stats summary row */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.15 }}
+          className="flex flex-wrap gap-x-16 gap-y-6 mb-16 pb-16"
+          style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}
+        >
+          <div>
+            <div className="text-[44px] font-bold tracking-[-0.03em] leading-none text-white/80 mb-1"
+              style={{ fontFamily: appleFontDisplay }}
             >
-              {/* Flare */}
-              <div className={`absolute -inset-px bg-gradient-to-br ${c.gradient} opacity-0 group-hover:opacity-[0.08] transition-opacity duration-500 pointer-events-none`} />
-              
-              <div className="flex items-center gap-4 mb-8 relative z-10">
-                <div className={`w-3 h-8 rounded-full bg-gradient-to-b ${c.gradient}`} />
-                <div className="font-bebas text-white text-[38px] leading-none mt-1">
-                  {c.title}
-                </div>
+              {totalSolved}
+            </div>
+            <div className="text-[12px] font-medium uppercase tracking-[0.15em] text-white/25"
+              style={{ fontFamily: appleFont }}
+            >
+              Problems Solved
+            </div>
+          </div>
+
+          <div className="flex gap-x-10 gap-y-4 flex-wrap items-end">
+            <div>
+              <div className="text-[24px] font-bold tracking-[-0.02em] leading-none text-white/50 mb-1"
+                style={{ fontFamily: appleFontDisplay }}
+              >{easy}</div>
+              <div className="text-[11px] font-medium uppercase tracking-[0.15em] text-white/20"
+                style={{ fontFamily: appleFont }}
+              >Easy</div>
+            </div>
+            <div>
+              <div className="text-[24px] font-bold tracking-[-0.02em] leading-none text-white/50 mb-1"
+                style={{ fontFamily: appleFontDisplay }}
+              >{medium}</div>
+              <div className="text-[11px] font-medium uppercase tracking-[0.15em] text-white/20"
+                style={{ fontFamily: appleFont }}
+              >Medium</div>
+            </div>
+            <div>
+              <div className="text-[24px] font-bold tracking-[-0.02em] leading-none text-white/50 mb-1"
+                style={{ fontFamily: appleFontDisplay }}
+              >{hard}</div>
+              <div className="text-[11px] font-medium uppercase tracking-[0.15em] text-white/20"
+                style={{ fontFamily: appleFont }}
+              >Hard</div>
+            </div>
+          </div>
+
+          {/* Platform breakdown */}
+          <div className="flex gap-x-8 gap-y-3 flex-wrap items-end">
+            {platformCounts.map((p, i) => (
+              <div key={i}>
+                <div className="text-[18px] font-bold tracking-[-0.01em] leading-none text-white/45 mb-1"
+                  style={{ fontFamily: appleFontDisplay }}
+                >{p.count}</div>
+                <div className="text-[10px] font-medium uppercase tracking-[0.12em] text-white/20"
+                  style={{ fontFamily: appleFont }}
+                >{p.name}</div>
               </div>
-              
-              <div className="relative z-10">
-                {c.content}
-              </div>
-            </motion.div>
-          ))}
-        </Reveal>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Rating graphs */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <RatingCard title="LeetCode" subLabel="Contest Rating" rating={lcCurrent} history={lcHistory} delay={0.05} />
+          <RatingCard title="Codeforces" subLabel={cfRank} rating={cfCurrent} history={cfHistory} delay={0.1} />
+          <RatingCard title="CodeChef" subLabel={ccStars} rating={ccCurrent} history={ccHistory} delay={0.15} />
+        </div>
+
+        {/* Topic tags */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="mt-16 pt-16"
+          style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}
+        >
+          <p className="text-[13px] font-semibold uppercase tracking-[0.2em] text-white/25 mb-8"
+            style={{ fontFamily: appleFont }}
+          >
+            Top Topics
+          </p>
+          <div className="flex flex-wrap gap-2.5">
+            {topTopics.map((t, i) => (
+              <motion.span
+                key={i}
+                whileHover={{ scale: 1.04 }}
+                className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-[12px] font-medium text-white/40 hover:text-white/70 transition-colors duration-300 cursor-default"
+                style={{
+                  fontFamily: appleFont,
+                  background: 'rgba(255,255,255,0.03)',
+                  border: '1px solid rgba(255,255,255,0.06)',
+                }}
+              >
+                {t.name}
+                <span className="text-[10px] text-white/20 tabular-nums">{t.count}</span>
+              </motion.span>
+            ))}
+          </div>
+        </motion.div>
+
       </div>
     </section>
   )
 }
-

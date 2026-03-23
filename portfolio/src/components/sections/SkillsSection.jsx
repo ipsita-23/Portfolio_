@@ -1,117 +1,175 @@
+import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Reveal } from '../common/Reveal'
+import { CONFIG } from '../../config/CONFIG'
 
-export function SkillsSection() {
-  const categories = [
-    {
-      title: 'Frontend Architecture',
-      icon: '🎨',
-      gradient: 'from-cyan-400 to-blue-500',
-      shadow: 'hover:shadow-[0_10px_40px_-10px_rgba(34,211,238,0.3)]',
-      border: 'hover:border-cyan-400/50',
-      skills: [
-        { name: 'React', level: 95 },
-        { name: 'JavaScript', level: 90 },
-        { name: 'TypeScript', level: 85 },
-        { name: 'HTML5 / CSS3', level: 90 },
-        { name: 'TailwindCSS', level: 95 },
-        { name: 'Three.js', level: 70 },
-      ]
-    },
-    {
-      title: 'Backend Systems',
-      icon: '⚙️',
-      gradient: 'from-purple-500 to-pink-500',
-      shadow: 'hover:shadow-[0_10px_40px_-10px_rgba(168,85,247,0.3)]',
-      border: 'hover:border-purple-500/50',
-      skills: [
-        { name: 'Node.js', level: 85 },
-        { name: 'Python', level: 90 },
-        { name: 'PostgreSQL', level: 80 },
-        { name: 'MongoDB', level: 85 },
-        { name: 'REST APIs', level: 95 },
-        { name: 'GraphQL', level: 75 },
-      ]
-    },
-    {
-      title: 'DevOps & Tools',
-      icon: '🛠️',
-      gradient: 'from-amber-400 to-orange-500',
-      shadow: 'hover:shadow-[0_10px_40px_-10px_rgba(251,146,60,0.3)]',
-      border: 'hover:border-orange-400/50',
-      skills: [
-        { name: 'Git & GitHub', level: 95 },
-        { name: 'Docker', level: 80 },
-        { name: 'AWS', level: 70 },
-        { name: 'Vercel', level: 90 },
-        { name: 'Linux', level: 85 },
-        { name: 'CI/CD', level: 75 },
-      ]
-    }
+const appleFont = "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter', sans-serif"
+const appleFontDisplay = "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif"
+
+function SkillBar({ name, value, delay = 0 }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, delay }}
+      className="group cursor-default"
+    >
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-[14px] font-medium text-white/70 group-hover:text-white/90 transition-colors duration-300"
+          style={{ fontFamily: appleFont }}
+        >
+          {name}
+        </span>
+        <span className="text-[13px] tabular-nums text-white/30 group-hover:text-white/50 transition-colors duration-300"
+          style={{ fontFamily: appleFont }}
+        >
+          {value}%
+        </span>
+      </div>
+      <div className="h-[3px] w-full rounded-full bg-white/[0.06] overflow-hidden">
+        <motion.div
+          className="h-full rounded-full"
+          style={{ background: 'linear-gradient(90deg, rgba(255,255,255,0.35), rgba(255,255,255,0.15))' }}
+          initial={{ width: 0 }}
+          whileInView={{ width: `${value}%` }}
+          viewport={{ once: true }}
+          transition={{ duration: 1.2, delay: delay + 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+        />
+      </div>
+    </motion.div>
+  )
+}
+
+export function SkillsSection({ skills = CONFIG.skills }) {
+  const [activeCol, setActiveCol] = useState(0)
+
+  const columns = [
+    { title: 'DSA', items: skills.columns.dsa || [{ name: 'DSA', value: 86 }] },
+    { title: 'ML & AI', items: skills.columns.mlAi },
+    { title: 'Languages', items: skills.columns.languagesCp },
+    { title: 'Dev Tools', items: skills.columns.devTools },
   ]
 
   return (
-    <section id="skills" className="relative bg-[#06060e] py-32 overflow-hidden">
-      {/* Subtle Background Glows */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-blue-600/10 blur-[150px] rounded-full pointer-events-none" />
+    <section id="skills" className="relative min-h-screen bg-[#1a1a2e] snap-start flex flex-col justify-center">
+      <div className="relative z-10 mx-auto w-full max-w-6xl px-6 py-28 md:py-36">
 
-      <div className="mx-auto max-w-[1200px] px-5 relative z-10">
-        <Reveal className="space-y-4 text-center max-w-3xl mx-auto mb-20">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-md text-white text-sm font-jetbrains uppercase tracking-widest shadow-[0_0_15px_rgba(255,255,255,0.05)]">
-            <span className="w-2 h-2 rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 animate-pulse" />
-            My Arsenal
-          </div>
-          <h2 className="text-[clamp(44px,8vw,96px)] font-bebas font-bold leading-[0.9] tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-[#ffffff] via-[#c7d2ff] to-[#8ea0ff]">
-            TECHNICAL SKILLS
-          </h2>
-          <p className="text-[#a0a8c0] text-lg font-jetbrains mt-4">
-            A comprehensive overview of the languages, frameworks, and tools I use to build robust and scalable systems.
-          </p>
-        </Reveal>
+        {/* Apple-style overline */}
+        <motion.p
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-[13px] font-semibold uppercase tracking-[0.2em] text-white/30 mb-6"
+          style={{ fontFamily: appleFont }}
+        >
+          Skills
+        </motion.p>
 
-        <Reveal className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {categories.map((category, idx) => (
-            <motion.div
-              key={idx}
-              whileHover={{ y: -8 }}
-              className={`group p-8 rounded-3xl bg-white/[0.02] border border-white/10 backdrop-blur-xl transition-all duration-500 shadow-2xl relative overflow-hidden ${category.shadow} ${category.border}`}
+        {/* Hero heading */}
+        <motion.h2
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7, delay: 0.05 }}
+          className="text-[48px] md:text-[72px] lg:text-[88px] font-bold leading-[1] tracking-[-0.04em] text-white mb-6"
+          style={{ fontFamily: appleFontDisplay }}
+        >
+          What I work with.
+        </motion.h2>
+
+        <motion.p
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          className="text-[17px] leading-[1.6] text-white/40 max-w-xl mb-20"
+          style={{ fontFamily: appleFont }}
+        >
+          A curated toolkit spanning algorithms, machine learning, languages, and developer infrastructure.
+        </motion.p>
+
+        {/* Tab navigation — Apple-style segmented control */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.15 }}
+          className="flex gap-1 p-1 rounded-xl w-fit mb-16"
+          style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}
+        >
+          {columns.map((col, i) => (
+            <button
+              key={col.title}
+              onClick={() => setActiveCol(i)}
+              className={`relative px-5 py-2 rounded-lg text-[13px] font-semibold tracking-wide transition-all duration-300 cursor-pointer
+                ${activeCol === i ? 'text-white' : 'text-white/35 hover:text-white/55'}`}
+              style={{ fontFamily: appleFont }}
             >
-              {/* Card Gradient Flare */}
-              <div className={`absolute -inset-px bg-gradient-to-br ${category.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-500 pointer-events-none`} />
-              
-              <div className="flex items-center gap-4 mb-8">
-                <div className={`text-2xl w-12 h-12 flex items-center justify-center rounded-2xl bg-gradient-to-br ${category.gradient} shadow-lg text-white font-emoji`}>
-                  {category.icon}
-                </div>
-                <h3 className="text-[#f0f0f8] font-bold text-xl font-playfair tracking-wide group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-gray-400 transition-colors">
-                  {category.title}
-                </h3>
-              </div>
-
-              <div className="space-y-6">
-                {category.skills.map((skill) => (
-                  <div key={skill.name}>
-                    <div className="flex justify-between text-sm font-jetbrains mb-3">
-                      <span className="text-[#c7d2ff] group-hover:text-white transition-colors">{skill.name}</span>
-                      <span className="text-[#8a94b5]">{skill.level}%</span>
-                    </div>
-                    <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        whileInView={{ width: `${skill.level}%` }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 1, ease: "easeOut", delay: 0.1 }}
-                        className={`h-full rounded-full bg-gradient-to-r ${category.gradient}`}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
+              {activeCol === i && (
+                <motion.div
+                  layoutId="activeSkillTab"
+                  className="absolute inset-0 rounded-lg"
+                  style={{
+                    background: 'rgba(255,255,255,0.08)',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.3), inset 0 0 0 0.5px rgba(255,255,255,0.1)',
+                  }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                />
+              )}
+              <span className="relative z-10">{col.title}</span>
+            </button>
           ))}
-        </Reveal>
+        </motion.div>
+
+        {/* Skills grid with progress bars */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-20 gap-y-7">
+          {columns[activeCol].items.map((skill, i) => (
+            <SkillBar
+              key={`${activeCol}-${skill.name}`}
+              name={skill.name}
+              value={skill.value}
+              delay={i * 0.06}
+            />
+          ))}
+        </div>
+
+        {/* Bottom meta */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="mt-20 pt-8 flex flex-wrap gap-x-16 gap-y-4"
+          style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}
+        >
+          <div>
+            <div className="text-white/50 font-semibold text-[28px] tracking-[-0.02em] leading-none mb-1"
+              style={{ fontFamily: appleFontDisplay }}
+            >
+              {columns.length}
+            </div>
+            <div className="text-[12px] font-medium uppercase tracking-[0.15em] text-white/25"
+              style={{ fontFamily: appleFont }}
+            >
+              Domains
+            </div>
+          </div>
+          <div>
+            <div className="text-white/50 font-semibold text-[28px] tracking-[-0.02em] leading-none mb-1"
+              style={{ fontFamily: appleFontDisplay }}
+            >
+              {columns.reduce((sum, col) => sum + col.items.length, 0)}
+            </div>
+            <div className="text-[12px] font-medium uppercase tracking-[0.15em] text-white/25"
+              style={{ fontFamily: appleFont }}
+            >
+              Technologies
+            </div>
+          </div>
+        </motion.div>
+
       </div>
     </section>
   )
 }
-

@@ -6,4 +6,14 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   assetsInclude: ['**/*.glb'],
+  server: {
+    proxy: {
+      '/api/leetcode': {
+        target: 'https://leetcode.com/graphql',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/api\/leetcode/, ''),
+      }
+    }
+  }
 })
